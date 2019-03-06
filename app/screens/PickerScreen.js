@@ -9,8 +9,8 @@ import {
   View,
 } from 'react-native';
 import axios from 'axios';
-
-import {Avatar, Icon, ListItem } from 'react-native-elements';
+import LoadingIndicator from '../components/LoadingIndicator'
+//import {Avatar, Icon, ListItem } from 'react-native-elements';
 
 export default class HomeScreen extends React.Component {
   constructor(props){
@@ -20,9 +20,12 @@ export default class HomeScreen extends React.Component {
       dayOTWeek : ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     };
     let day = this.props.navigation.getParam('day');
+    let date = this.props.navigation.getParam('date');
     this._getGroupsList(day);
   }
-  
+  componentDidMount(){
+    this.loading.start()
+  }
   static navigationOptions = {
     title: 'Subject selection',
     headerStyle: {
@@ -38,7 +41,11 @@ export default class HomeScreen extends React.Component {
     let url = await AsyncStorage.getItem('url') + '/edu/groups';
     axios
     .get(url, {params:{id:id, day:Number(day)}})
-    .then(response => this.setState({list:response.data}));
+    .then(response => {this.setState({list:response.data});this.loading.stop()})
+    url = await AsyncStorage.getItem('url') + '/lessons';
+    axios
+    .get(url, {params:{userId:"5c15e730d6f3921070caa73e", date:this.date}})
+    .then(res => console.warn(res))
   };
   _onPress = (item)=>{
     this.props.navigation.state.params.returnData(item.gNum);
@@ -50,6 +57,7 @@ export default class HomeScreen extends React.Component {
     let days = [1,2,3,4,5,6];
     return (
       <View style={styles.container}>
+        <LoadingIndicator onRef={(loading => this.loading = loading)} />
         {
           days.map((val, i)=>{
             let first = this.state.list.filter(v=>Number(v.number)===i);
