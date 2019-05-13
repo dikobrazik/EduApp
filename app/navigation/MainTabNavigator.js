@@ -15,15 +15,16 @@ const HomeStack = createStackNavigator({
 });
 
 HomeStack.navigationOptions = {
-  tabBarLabel: 'Home',
+  tabBarLabel: 'Данные',
   tabBarIcon: ({ focused }) => (
     <Icon
       focused={focused}
       name={
         Platform.OS === 'ios'
           ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'home'
+          : 'align-justify'
       }
+      color= {focused ? 'white':'#C5CAE9'}
       size={30}
     />
   ),
@@ -34,11 +35,12 @@ const LinksStack = createStackNavigator({
 });
 
 LinksStack.navigationOptions = {
-  tabBarLabel: 'Links',
+  tabBarLabel: 'Журнал',
   tabBarIcon: ({ focused }) => (
     <Icon
       focused={focused}
-      name={Platform.OS === 'ios' ? 'gratipay' : 'heart'}
+      name={Platform.OS === 'ios' ? 'book' : 'book'}
+      color= {focused ? 'white':'#C5CAE9'}
       size={28}
     />
   ),
@@ -49,11 +51,12 @@ const SettingsStack = createStackNavigator({
 });
 
 SettingsStack.navigationOptions = {
-  tabBarLabel: 'Profile',
+  tabBarLabel: 'Настройки',
   tabBarIcon: ({ focused }) => (
     <Icon
       focused={focused}
       name={Platform.OS === 'ios' ? 'user-circle' : 'user'}
+      color= {focused ? 'white':'#C5CAE9'}
       size={30}
     />
   ),
@@ -68,8 +71,9 @@ export default createBottomTabNavigator({
     activeBackgroundColor:'#303F9F',
     animationEnabled:true,
     activeTintColor:'#fff',
+    inactiveTintColor:'#C5CAE9',
     style:{
-      backgroundColor:'#3F51B5'
-    }
+      backgroundColor:'#3F51B5',
+    },
   }
 });

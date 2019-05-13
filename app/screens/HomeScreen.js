@@ -27,7 +27,7 @@ export default class HomeScreen extends React.Component {
       group:'',
       groupList:[],
     };
-    this._getGroupList('4');
+    this._getGroupList('2331');
   }
   
   static navigationOptions = {
@@ -54,8 +54,10 @@ export default class HomeScreen extends React.Component {
    * Передается в окно выбора групп
    */
   returnData(group) {
-    this.setState({group: group});
-    this._getGroupList(group);
+    this.setState({group: group[0]});
+    if(group[1]) console.warn(group[1])
+    if(group[1]) this.setState({groupList:group[1].content})
+    else this._getGroupList(group[0]);
   }
   componentDidMount() {
     this.setState({day:(new Date().getDay())})
@@ -65,7 +67,10 @@ export default class HomeScreen extends React.Component {
    */
   _getGroupList = async (group) => {
     let url = await AsyncStorage.getItem('url') + '/groups/list?index='+group;
-    await fetch(url).then(res=>res.json()).then(res=>this.setState({groupList:JSON.parse(res[0].content)}))
+    await fetch(url)
+      .then(res=>res.json())
+      .then(res=>this.setState({groupList:JSON.parse(res[0].content)}))
+      .catch(err=>console.warn('err'))
   }
   /**
    * Метод для выбора даты(вызывает датапикер)
@@ -84,7 +89,7 @@ export default class HomeScreen extends React.Component {
           date: new Date(this.state.date.split('.')[2],(this.state.date.split('.')[1]-1),this.state.date.split('.')[0])
         });
         if (action == DatePickerAndroid.dateSetAction){
-          this.setState({selectedDate:new Date(year, month, day)})
+          this.setState({selectedDate:new Date(year, month, day).toDateString()})
           this.setState({day:new Date(year, month, day).getDay()})
           if(month<9) this.setState({date:day+'.0'+(month+1)+'.'+year})
           else this.setState({date:day+'.'+(month+1)+'.'+year})
@@ -110,7 +115,7 @@ export default class HomeScreen extends React.Component {
           subjId:subjId, 
           date:(
             this.state.selectedDate?new Date(this.state.selectedDate).toDateString():new Date().toDateString()), 
-          content:JSON.stringify(this.state.groupList)}})})
+          content:this.state.groupList}})})
     .then(res=>this.loading.stop())
   }
   /*
@@ -145,11 +150,11 @@ export default class HomeScreen extends React.Component {
   _renderItem = ({item, i}) => (
     <MyListItem
       key={i}
+      item={item}
       id={this.state.groupList.indexOf(item)}
       onPressItem={this._onPressItem}
       onCheckItem={this._onCheckItem}
       setItemMark={this._setItemMark}
-      title={item.name + ' ' + item.surname}
     />
   );
 
@@ -163,7 +168,7 @@ export default class HomeScreen extends React.Component {
         <LoadingIndicator onRef={(loading)=>this.loading = loading} />
         <StatusBar backgroundColor="#3a3F9F" barStyle="light-content" />
         {/*Строки изменения даты*/}
-        <View style={styles.datePickerView}>
+        <TouchableOpacity style={styles.datePickerView} onPress={async () => {this._chooseData()}}>
             <View style={{flex:1}}>
             </View>
             <View style={{flexDirection:'row',flex:1,alignItems:'center',justifyContent:'center'}}>
@@ -174,7 +179,7 @@ export default class HomeScreen extends React.Component {
             <TouchableOpacity style={{flexDirection:'row',flex:1,paddingRight:15,justifyContent:'flex-end'}} onPress={async () => {this._chooseData()}}>
               <Icon size={30} underlayColor='#6C665677' color='#FFFFFF' name='calendar-edit' type='material-community'/>
             </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
         {/*Choose the group number...*/}
         <View style={{flex:1, backgroundColor:'#C5CAE9'}}>
           <TouchableOpacity style={{flexDirection:'row', marginTop:5, borderBottomRadius:3}} onPress={()=>{navigate('Picker', pickerParams)}}>

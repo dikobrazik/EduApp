@@ -24,7 +24,7 @@ class AuthLoadingScreen extends React.Component {
   _bootstrapAsync = async () => {
     const userToken = await AsyncStorage.getItem('userToken');
     const userId = await AsyncStorage.getItem('userId');
-    AsyncStorage.setItem('url','http://192.168.1.100:1337');
+    //AsyncStorage.setItem('url','http://192.168.1.100:1337');
     console.log('userToken:'+userToken);
     console.log('userId:'+userId)
     // This will switch to the App screen or Auth screen and this loading
@@ -51,7 +51,6 @@ const styles = StyleSheet.create({
   },
 });
 const options = {
-  //This was a hack to enable the screen after a redux rehydrate
   animationEnabled: false,
   swipeEnabled: false,
 };

@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Alert,
   AsyncStorage,
   Button,
   ScrollView,
@@ -20,7 +21,7 @@ export default class HomeScreen extends React.Component {
       dayOTWeek : ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     };
     let day = this.props.navigation.getParam('day');
-    let date = this.props.navigation.getParam('date');
+    this.date = this.props.navigation.getParam('date');
     this._getGroupsList(day);
   }
   componentDidMount(){
@@ -41,14 +42,30 @@ export default class HomeScreen extends React.Component {
     let url = await AsyncStorage.getItem('url') + '/edu/groups';
     axios
     .get(url, {params:{id:id, day:Number(day)}})
-    .then(response => {this.setState({list:response.data});this.loading.stop()})
+    .then(response => {this.setState({list:response.data})})
     url = await AsyncStorage.getItem('url') + '/lessons';
     axios
-    .get(url, {params:{userId:"5c15e730d6f3921070caa73e", date:this.date}})
-    .then(res => console.warn(res))
+    .get(url, {params:{userId:id, date:this.date}})
+    .then(res => {this.lessons = res.data;this.loading.stop()})
+    .catch(err => {
+      this.loading.stop()
+      Alert.alert(
+        'Oops..',
+        'Что то пошло не так :(',
+        [
+          {text: 'OK', onPress: () => {}},
+        ],
+        {cancelable: true},
+      );
+    })
   };
   _onPress = (item)=>{
-    this.props.navigation.state.params.returnData(item.gNum);
+    let lesson = this.lessons.filter(value=>{
+      if(value.subjId === item.id) return true
+    })
+    console.warn(lesson[0])
+    console.warn(item)
+    this.props.navigation.state.params.returnData([item.gNum, lesson[0]]);
     AsyncStorage.setItem('subjId', item.id)
     AsyncStorage.setItem('groupNumber', item.gNum)
     this.props.navigation.goBack();

@@ -108,6 +108,18 @@ export default class MyListItem extends React.PureComponent {
       mark:undefined,
     }
   }
+  componentWillReceiveProps(nextProps){
+    this.setState({
+      check:nextProps.item.checked?nextProps.item.checked:false,
+      mark:nextProps.item.mark?nextProps.item.mark:undefined,
+    })
+  }
+  componentDidUpdate(){
+    // if(this.props.item.checked) this.setState({check:this.props.item.checked})
+    // else this.setState({check:false})
+    // if(this.props.item.mark) this.setState({mark:this.props.item.mark})
+    // else this.setState({mark:undefined})
+  }
   _onChange = () => {
     this.setState({check:!this.state.check});
     this.props.onCheckItem(this.props.id);
@@ -147,7 +159,7 @@ export default class MyListItem extends React.PureComponent {
         {/* Name-Surname */}
         <TouchableOpacity style={{flexDirection:'row', flex:2}} onPress={this._onChange}>
           <View style={{justifyContent:'center', marginLeft:15}}>
-            <Text style={{fontSize:18}}>{this.props.title}</Text>
+            <Text style={{fontSize:18}}>{this.props.item.name + ' ' + this.props.item.surname}</Text>
           </View>
         </TouchableOpacity>
         {/*  Mark field  */}
